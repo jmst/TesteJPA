@@ -1,7 +1,7 @@
 package pt.upt.ei.lp.db;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +18,7 @@ public class Turma {
 	private String nome;
 
 	@ManyToMany(mappedBy="turmas")
-	private List<Aluno> alunos = new ArrayList<Aluno>();
+	private Set<Aluno> alunos = new HashSet<Aluno>();
 
 	public int getId() {
 		return id;
@@ -44,8 +44,18 @@ public class Turma {
 		this.nome = nome;
 	}
 
-	public List<Aluno> getAlunos() {
+	public Set<Aluno> getAlunos() {
 		return alunos;
+	}
+
+	public void addAluno( Aluno a) {
+		alunos.add(a);
+		a.getTurmas().add(this);
+	}
+	
+	public void removeAluno( Aluno a) {
+		alunos.remove(a);
+		a.getTurmas().remove(this);
 	}
 
 	public String toString() {

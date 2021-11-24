@@ -1,10 +1,9 @@
 package pt.upt.ei.lp.db;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,11 +21,11 @@ public class Aluno {
 	private int numero;
 	private String nome;
 
-	@ManyToMany(cascade=CascadeType.PERSIST)
+	@ManyToMany
 	@JoinTable(name = "AlunoTurma", 
 		joinColumns = { @JoinColumn(name = "idAluno", referencedColumnName = "id") }, 
 		inverseJoinColumns = { @JoinColumn(name = "idTurma", referencedColumnName = "id") })
-	private List<Turma> turmas = new ArrayList<Turma>();
+	private Set<Turma> turmas = new HashSet<Turma>();
 
 	public int getId() {
 		return id;
@@ -52,10 +51,18 @@ public class Aluno {
 		this.nome = nome;
 	}
 
-	public List<Turma> getTurmas() {
+	public Set<Turma> getTurmas() {
 		return turmas;
 	}
 
+	public void addTurma( Turma t) {
+		turmas.add(t);
+	}
+	
+	public void removeTurma( Turma t) {
+		turmas.remove(t);
+	}
+	
 	public String toString() {
 		String st = "Aluno id=" + id + "  num=" + numero + "  nome=" + nome
 				+ "\n";

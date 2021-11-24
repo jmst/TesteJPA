@@ -1,5 +1,6 @@
 package pt.upt.ei.lp.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -21,19 +22,19 @@ public class TesteJPAMain {
 		List<Aluno> alunos = null;
 		List<Turma> turmas = null;
 		// Read the existing entries
-		 em.getTransaction().begin();
-		 Query qd = em.createQuery("SELECT a FROM Aluno a");
-		 List<Aluno> la = (List<Aluno>) qd.getResultList();
-		 for (Aluno a : la) {
-		 em.remove(a);
-		 }
-		 qd = em.createQuery("SELECT t FROM Turma t");
-		 List<Turma> ta = (List<Turma>) qd.getResultList();
-		 for (Turma t : ta) {
-		 em.remove(t);
-		 }
-		 em.getTransaction().commit();
-		
+		em.getTransaction().begin();
+		Query qd = em.createQuery("SELECT a FROM Aluno a");
+		List<Aluno> la = (List<Aluno>) qd.getResultList();
+		for (Aluno a : la) {
+			em.remove(a);
+		}
+		qd = em.createQuery("SELECT t FROM Turma t");
+		List<Turma> ta = (List<Turma>) qd.getResultList();
+		for (Turma t : ta) {
+			em.remove(t);
+		}
+		em.getTransaction().commit();
+
 		System.out.println("Limpei BD");
 		System.out.println("------------------------");
 		// Read the existing entries
@@ -67,34 +68,35 @@ public class TesteJPAMain {
 			turma1.setNumero(11);
 			turma1.setNome("IA");
 			em.persist(turma1);
-			aluno1.getTurmas().add(turma1);
-			turma1.getAlunos().add(aluno1);
-			aluno3.getTurmas().add(turma1);
-			turma1.getAlunos().add(aluno3);
+			aluno1.addTurma(turma1);
+			aluno3.addTurma(turma1);
 			Turma turma2 = new Turma();
 			turma2.setNumero(12);
 			turma2.setNome("PAJ");
 			em.persist(turma2);
-			aluno1.getTurmas().add(turma2);
-			turma2.getAlunos().add(aluno1);
-			aluno3.getTurmas().add(turma2);
-			turma2.getAlunos().add(aluno3);
+			aluno1.addTurma(turma2);
+			aluno4.addTurma(turma2);
 			Turma turma3 = new Turma();
 			turma3.setNumero(13);
 			turma3.setNome("FBD");
 			em.persist(turma3);
-			aluno2.getTurmas().add(turma3);
-			turma3.getAlunos().add(aluno2);
+			aluno2.addTurma(turma3);
 			Turma turma4 = new Turma();
 			turma4.setNumero(14);
 			turma4.setNome("POO");
 			em.persist(turma4);
-			aluno1.getTurmas().add(turma4);
-			aluno3.getTurmas().add(turma4);
-			aluno4.getTurmas().add(turma4);
+			aluno1.addTurma(turma4);
+			aluno3.addTurma(turma4);
+			aluno4.addTurma(turma4);
+
 			// Commit the transaction, which will cause the entity to
 			// be stored in the database
 			em.getTransaction().commit();
+			
+			em.refresh(turma1);
+			em.refresh(turma2);
+			em.refresh(turma3);
+			em.refresh(turma4);
 		}
 		//
 		q = em.createQuery("select a from Aluno a");
@@ -119,10 +121,13 @@ public class TesteJPAMain {
 		q.setParameter("num", 3);
 		List<Aluno> la2 = (List<Aluno>) q.getResultList();
 		if (la2.size() == 1) {
-			Aluno ar = la2.get(0); 
-			for (Turma t : ar.getTurmas())
-				t.getAlunos().remove(ar);
-			em.remove( ar);
+			Aluno ar = la2.get(0);
+			List<Turma> lt = new ArrayList<Turma>(ar.getTurmas());
+			for (Turma t : lt) {
+				ar.removeTurma(t);
+				em.refresh(t);
+			}
+			em.remove(ar);
 		}
 		em.getTransaction().commit();
 		//
@@ -135,11 +140,6 @@ public class TesteJPAMain {
 		if (la3.size() == 1)
 			la3.get(0).setNumero(222);
 		em.getTransaction().commit();
-		em.close();
-
-		//
-		
-		em = factory.createEntityManager();
 		//
 		q = em.createQuery("select a from Aluno a");
 		alunos = (List<Aluno>) q.getResultList();
