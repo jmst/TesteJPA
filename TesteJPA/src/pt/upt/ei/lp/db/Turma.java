@@ -57,6 +57,15 @@ public class Turma {
 		alunos.remove(a);
 		a.getTurmas().remove(this);
 	}
+	
+	public void removeAluno( int ida) {
+		for (Aluno a : alunos) {
+			if ( a.getId()== ida) {
+				alunos.remove(a);
+			return;
+			}
+		}
+	}
 
 	public String toString() {
 		String st = "Turma id=" + id + "  num=" + numero + "  nome=" + nome;

@@ -4,6 +4,7 @@ package pt.upt.ei.lp.db;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,7 +22,7 @@ public class Aluno {
 	private int numero;
 	private String nome;
 
-	@ManyToMany
+	@ManyToMany(cascade= {CascadeType.PERSIST,CascadeType.REFRESH})
 	@JoinTable(name = "AlunoTurma", 
 		joinColumns = { @JoinColumn(name = "idAluno", referencedColumnName = "id") }, 
 		inverseJoinColumns = { @JoinColumn(name = "idTurma", referencedColumnName = "id") })

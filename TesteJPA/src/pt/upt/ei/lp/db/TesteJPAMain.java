@@ -1,7 +1,7 @@
 package pt.upt.ei.lp.db;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -92,7 +92,6 @@ public class TesteJPAMain {
 			// Commit the transaction, which will cause the entity to
 			// be stored in the database
 			em.getTransaction().commit();
-			
 			em.refresh(turma1);
 			em.refresh(turma2);
 			em.refresh(turma3);
@@ -122,11 +121,7 @@ public class TesteJPAMain {
 		List<Aluno> la2 = (List<Aluno>) q.getResultList();
 		if (la2.size() == 1) {
 			Aluno ar = la2.get(0);
-			List<Turma> lt = new ArrayList<Turma>(ar.getTurmas());
-			for (Turma t : lt) {
-				ar.removeTurma(t);
-				em.refresh(t);
-			}
+			Set<Turma> lt = ar.getTurmas();
 			em.remove(ar);
 		}
 		em.getTransaction().commit();
@@ -137,7 +132,7 @@ public class TesteJPAMain {
 		q = em.createQuery("SELECT a FROM Aluno a WHERE a.numero = :num");
 		q.setParameter("num", 2);
 		List<Aluno> la3 = (List<Aluno>) q.getResultList();
-		if (la3.size() == 1)
+		if (la3.size() == 1)	// encontrou um aluno?
 			la3.get(0).setNumero(222);
 		em.getTransaction().commit();
 		//
@@ -154,6 +149,7 @@ public class TesteJPAMain {
 		System.out.println("------------------------");
 		System.out.println("tabela Turmas");
 		for (Turma t : turmas) {
+			em.refresh(t);
 			System.out.println(t);
 		}
 
